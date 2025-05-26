@@ -1,0 +1,12 @@
+---
+- name: Setup proxmox nodes
+  hosts: pve
+  gather_facts: true
+  vars:
+    pve_iommu_enable: true
+  pre_tasks:
+    - name: Update Repository
+      ansible.builtin.package:
+        update_cache: true
+  roles:
+    - role: pve

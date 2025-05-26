@@ -1,0 +1,24 @@
+---
+- name: Run Proxmox configuration
+  block:
+    - name: Setup repos
+      include_tasks: repos.yml
+
+    - name: Remove subscription nag
+      include_tasks: no-nag.yml
+
+    - name: Configure High Availability
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - corosync
+        - pve-ha-crm
+        - pve-ha-lrm
+
+    - name: Check for iommu
+      include_tasks: iommu.yml
+  when:
+    - ansible_system == "Linux"
+    - ansible_os_family == "Debian"

@@ -1,0 +1,13 @@
+---
+- name: Fix subscription nag using a template
+  register: _pve_update_nag
+  ansible.builtin.template:
+    src: etc/apt/apt.conf.d/no-nag-script.j2
+    dest: /etc/apt/apt.conf.d/no-nag-script
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Force reinstall a package if nag updated
+  shell: apt-get --reinstall install proxmox-widget-toolkit
+  when: _pve_update_nag is changed

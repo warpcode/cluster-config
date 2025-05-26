@@ -1,0 +1,5 @@
+---
+pve_distribution: "{{ ansible_distribution_release }}"
+
+pve_iommu_enable: false
+pve_iommu_type: intel # or amd

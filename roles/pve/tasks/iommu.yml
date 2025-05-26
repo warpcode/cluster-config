@@ -1,0 +1,21 @@
+---
+- name: IOMMU for intel
+  register: _pve_iommu_intel
+  ansible.builtin.replace:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!\s*intel_iommu=)[^"])*)(\sintel_iommu=\w+)?(?:intel_iommu=\S+)?(\s*[^"]*\s*)"$'
+    replace: 'GRUB_CMDLINE_LINUX_DEFAULT="\1{{ (pve_iommu_enable and pve_iommu_type == "intel") | ternary(" intel_iommu=on", "") }}\3"'
+    backup: true
+
+- name: IOMMU for amd
+  register: _pve_iommu_amd
+  ansible.builtin.replace:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!\s*amd_iommu=)[^"])*)(\samd_iommu=\w+)?(?:amd_iommu=\S+)?(\s*[^"]*\s*)"$'
+    replace: 'GRUB_CMDLINE_LINUX_DEFAULT="\1{{ (pve_iommu_enable and pve_iommu_type == "amd") | ternary(" amd_iommu=on", "") }}\3"'
+    backup: true
+
+- name: Update grub
+  ansible.builtin.command:
+    cmd: update-grub
+  when: _pve_iommu_intel is changed or _pve_iommu_amd is changed
