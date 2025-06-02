@@ -1,0 +1,57 @@
+---
+name: CI
+"on":
+  workflow_dispatch:
+  pull_request:
+    paths:
+      # - ".github/workflows/ci.yml"
+      - "roles/**"
+  push:
+    branches:
+      - main
+    paths:
+      # - ".github/workflows/ci.yml"
+      - "roles/**"
+  schedule:
+    # Run on the first of the month at midnight
+    - cron: "0 0 1 * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: "warpcode.cluster-config"
+
+jobs:
+  ansiblelint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+        with:
+          path: "warpcode.cluster-config"
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: "pip"
+
+      - uses: actions/cache@v4
+        id: venv-cache
+        with:
+          path: warpcode.cluster-config/.venv/
+          key: ansiblelint-venv-cache-${{ hashFiles('warpcode.cluster-config/requirements.txt') }}
+          restore-keys: |
+            ansiblelint-venv-cache-
+
+      - name: Install test dependencies.
+        if: steps.venv-cache.outputs.cache-hit != 'true'
+        run: make setup
+
+      - name: Lint code.
+        run: |
+          make lint
