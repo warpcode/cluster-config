@@ -1,7 +1,7 @@
 SCENARIO_DIRS := $(shell for p in ./molecule/*; do  echo $$(basename "$$p"); done )
 
 install-proxmox: setup
-	. .venv/bin/activate; ansible-playbook -i inventory setup_proxmox.yml
+	. .venv/bin/activate; ansible-playbook setup_proxmox.yml
 
 setup: setup-venv
 

@@ -3,3 +3,7 @@ ansible-lint
 docker
 molecule
 molecule-plugins[docker]
+openssh_wrapper
+paramiko
+proxmoxer
+requests

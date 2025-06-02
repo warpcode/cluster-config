@@ -1,13 +1,19 @@
-[pve]
-pve1
-pve2
-pve3
+---
 
-[lxc]
-lxc1
-lxc2
-
-[vm]
-vm1
-vm2
-
+plugin: community.general.proxmox
+url: "https://192.168.1.20:8006" # Proxmox host (replace with your IP/URL)
+user: root@pam
+password: <PASSWORD>
+validate_certs: false
+want_facts: true
+want_proxmox_nodes_ansible_host: true
+keyed_groups:
+  - key: proxmox_tags_parsed
+    separator: ""
+    prefix: proxmox_tags_
+compose:
+  ansible_host: "'192.168.1.20'"
+  # ansible_connection: "'community.general.proxmox_pct_remote'"
+  ansible_user: "'root'"
+  ansible_password: "'<PASSWORD>'"
+  ansible_private_key_file: "'~/.ssh/id_rsa'"
